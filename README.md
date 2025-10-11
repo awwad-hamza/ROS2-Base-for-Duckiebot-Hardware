@@ -4,15 +4,40 @@
 
 ## 🦆 About
 
-ROS2 Base for Duckiebot Hardware is a pre-configured ROS 2 Foxy environment optimized for Duckiebot robotics platforms running on the NVIDIA Jetson Nano Developer Kit. It provides a ready-to-use setup that streamlines development, deployment, and experimentation with ROS 2 on embedded systems.
+ROS2 Base for Duckiebot Hardware is a pre-configured ROS 2 Foxy environment optimized for the duckiebot DB21M robotics platform running on the NVIDIA Jetson Nano Developer Kit. It provides a ready-to-use setup that streamlines development, deployment, and experimentation with ROS 2 on embedded systems.
+
+## SD Card Preparation for Jetson Nano Developer Kit
+
+Follow the steps below to prepare your SD card and set up your Jetson Nano 2GB Developer Kit.
+
+### 1. Download the Official SD Card Image
+- Visit NVIDIA’s [official download page](https://developer.nvidia.com/embedded/downloads).
+- Download the image file for the Jetson Nano 2GB Developer Kit.
+
+### 2. Flash the Image to a microSD Card
+- Use [Balena Etcher](https://etcher.balena.io/) or any other reliable flashing tool to write the downloaded image to a **new microSD card**.
+- Ensure the flashing process completes successfully before removing the SD card.
+
+### 3. Boot the Jetson Nano
+- Insert the newly flashed microSD card into your Jetson Nano.
+- Power on the Jetson Nano and follow the on-screen setup instructions.
+
+### 4. System Configuration
+To align your setup with the **Duckietown shell environment** (`duckie@HOSTNAME`):
+
+- **Username:** enter `duckie` in the *Pick a username* field.  
+- **Hostname:** choose a suitable hostname in the *Your computer’s name* field.  
+- **Password:** use `quackquack` to match the default Duckietown (`dts`) setup.
+
+> **Note:** These configuration choices are optional but recommended to maintain compatibility with Duckietown conventions for future use.
+
 
 
 /////////////////////////////////
+
 Go back to these later hamza
 
 ## Prerequisites
-
-Jetson Nano 2 GB with JetPack 4.x (L4T R32.x) installed.
 
 Docker installed (comes with JetPack).
 
@@ -22,14 +47,14 @@ Optional: USB or CSI camera (for camera passthrough).
 
 //////////////////////////////////
 
-## Step 1: Verify Docker and NVIDIA runtime
-1. Check Docker version:
+## Verify Docker and NVIDIA runtime
+### 1. Check Docker version:
 ```
 docker --version
 ```
 It should display the installed Docker Engine version on your Jetson Nano.
 
-2. Check available runtimes:
+### 2. Check available runtimes:
 ```
 sudo docker info | grep Runtimes
 ```
@@ -60,7 +85,7 @@ Then restart Docker:
 sudo systemctl restart docker
 ```
 
-## Step 2: Step 2: Verify GPU devices on the host
+## Verify GPU devices on the host
 ```
 ls /dev/nv*
 ```
