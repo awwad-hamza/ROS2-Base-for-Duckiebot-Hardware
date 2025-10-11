@@ -31,12 +31,90 @@ To align your setup with the **Duckietown shell environment** (`duckie@HOSTNAME`
 
 > **Note:** These configuration choices are optional but recommended to maintain compatibility with Duckietown conventions for future use.
 
+## PC–Jetson Communication Setup
+This step will let you connect to your Jetson Nano from your PC using either Ethernet or Wi-Fi.
+You’ll need a keyboard, screen, and (optionally) a mouse connected to the Jetson for this setup — at least until you can SSH into it remotely.
+> Note: You can always operate the Jetson directly using a screen and keyboard, but setting up SSH makes development much more convenient.
+### On the Jetson
+1. Create a new Ethernet connection with a static IP
+```
+nmcli connection add type ethernet ifname eth0 con-name duckie-eth ip4 10.42.0.2/24 gw4 10.42.0.1
+```
+2. Set the DNS server for name resolution
+```
+nmcli connection modify duckie-eth ipv4.dns "8.8.8.8"
+```
+3. Bring the new Ethernet connection online
+```
+nmcli connection up duckie-eth
+```
+4. Enable automatic reconnection at boot
+```
+nmcli connection modify duckie-eth connection.autoconnect yes
+```
 
+### On Host PC
+1. Before setting up the Ethernet connection, clear any previous SSH key entries associated with the Jetson’s IP (this can happen if you’ve reflashed the Jetson or changed its configuration):
+```
+ssh-keygen -f "$HOME/.ssh/known_hosts" -R "10.42.0.2"
+```
+This ensures SSH will not complain about changed host keys.
 
+2. Next, configure a static IP on your PC’s Ethernet interface so it’s on the same subnet as the Jetson:
+```
+sudo nmcli connection add type ethernet ifname enp2s0 con-name jetson-link ip4 10.42.0.1/24
+sudo nmcli connection up jetson-link
+```
+---
+Once the connection is active, you can SSH into your Jetson from your PC using:
+```
+ssh duckie@10.42.0.2
+```
+
+### (Optional) Set Up Wi-Fi on the Jetson
+You can either connect your Jetson Nano directly to Wi-Fi or share your PC’s internet connection through an Ethernet bridge.
+In this section, we’ll go through the Wi-Fi setup method, which is often simpler and ensures your Jetson can access the internet for installing packages, pulling Docker images, and running updates.
+> Note: Note: Having an active internet connection on the Jetson is essential for most development tasks.
+
+> Make sure the Wi-Fi dongle is connected to the jetson before this task.
+
+Access your Jetson with a keyboard and monitor, or SSH into it over Ethernet.
+>Note: nano is not installed by default on the Jetson, so you’ll need to install it first using: `sudo apt install nano`
+
+```
+nmcli radio wifi on
+sudo nano /etc/NetworkManager/NetworkManager.conf
+```
+Look for the following section:
+```
+[ifupdown]
+managed=false
+```
+If `managed=false` is set, change it to:
+```
+[ifupdown]
+managed=true
+```
+Save and close the file (Ctrl + O, Enter, Ctrl + X), then restart the NetworkManager service:
+```
+sudo systemctl restart NetworkManager
+```
+
+### Connect to a Wi-Fi Network
+To view available Wi-Fi networks:
+```
+nmcli device wifi list
+```
+Then connect to your desired network:
+```
+nmcli device wifi connect "SSID" password "your_password"
+```
+Replace `SSID` and `your_password` with your actual Wi-Fi network name and password.
+
+> Note: Connecting to a university or public Wi-Fi network (such as `eduroam`), may not be as straightforward as this.
 
 
 ## Docker Installation
-
 Follow the steps below to install and verify Docker on your Jetson Nano.
 ### Install Docker on the Jetson
 ```
