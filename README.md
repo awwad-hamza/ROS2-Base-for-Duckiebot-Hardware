@@ -175,8 +175,29 @@ ls /dev/nv*
 - This confirms the Jetson GPU is visible to Docker containers.
 
 
+## ROS 2 Foxy Base Container on the Jetson
+To keep your Docker container immutable while preserving your ROS 2 work outside the container, you can use a host-mounted workspace.
+1. Create a workspace on the Jetson host
+```
+mkdir -p ~/ros_ws
+```
+This folder will store all your ROS 2 packages, builds, and installations.
+2. Run the ROS 2 Foxy container with the mounted workspace
+```
+sudo docker run -it --rm \
+  --runtime nvidia \
+  --network host \
+  -v /tmp/.X11-unix:/tmp/.X11-unix \
+  -v ~/ros_ws:/workspace \
+  -e DISPLAY=$DISPLAY \
+  dustynv/ros:foxy-ros-base-l4t-r32.7.1
+```
+3. Work inside the container
+```
+cd /workspace
+colcon build
+source install/setup.bash
+```
+- Any changes, packages, or builds inside /workspace persist on the host, even after the container is removed.
 
-
-//////////////
-
-next talk about how we make ros2 foxy work on the jetson after these steps
+- The container remains clean and reusable, while your development work is safely stored outside.
