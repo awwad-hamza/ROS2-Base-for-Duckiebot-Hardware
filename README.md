@@ -33,42 +33,46 @@ To align your setup with the **Duckietown shell environment** (`duckie@HOSTNAME`
 
 
 
-/////////////////////////////////
 
-Go back to these later hamza
 
-## Prerequisites
+## Docker Installation
 
-Docker installed (comes with JetPack).
-
-NVIDIA container runtime available (installed by default).
-
-Optional: USB or CSI camera (for camera passthrough).
-
-//////////////////////////////////
-
-## Verify Docker and NVIDIA runtime
-### 1. Check Docker version:
+Follow the steps below to install and verify Docker on your Jetson Nano.
+### Install Docker on the Jetson
+```
+sudo apt-get update
+sudo apt-get install docker.io
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+sudo reboot
+```
+Verify the Installation
 ```
 docker --version
 ```
-It should display the installed Docker Engine version on your Jetson Nano.
+You should see the installed **Docker Engine version** displayed on your Jetson Nano.
+To confirm Docker is working properly, run the Hello World container:
+```
+docker run hello-world
+```
+If it runs successfully, Docker is correctly installed and functioning.
 
-### 2. Check available runtimes:
+### Verify NVIDIA runtine
+Check whether the NVIDIA runtime is available:
 ```
 sudo docker info | grep Runtimes
 ```
-It should display something like:
+It should display an output similar to:
 ```
 Runtimes: io.containerd.runc.v2 io.containerd.runtime.v1.linux nvidia runc
 ```
-If `nvidia` is missing, fix it:
+If `nvidia` is missing, follow the steps below to fix it:
 ```
 sudo apt-get update
 sudo apt-get install -y nvidia-container-runtime
 sudo nano /etc/docker/daemon.json
 ```
-Add (or edit) the file to include:
+Update the file contents as follows:
 ```
 {
     "runtimes": {
@@ -80,7 +84,7 @@ Add (or edit) the file to include:
     "default-runtime": "nvidia"
 }
 ```
-Then restart Docker:
+Save the file, then restart the Docker service:
 ```
 sudo systemctl restart docker
 ```
