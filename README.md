@@ -4,7 +4,7 @@
 
 ## 🦆 About
 
-ROS2 Base for Duckiebot Hardware is a pre-configured ROS 2 Foxy environment optimized for the duckiebot DB21M robotics platform running on the NVIDIA Jetson Nano Developer Kit. It provides a ready-to-use setup that streamlines development, deployment, and experimentation with ROS 2 on embedded systems.
+ROS2 Base for Duckiebot Hardware is a pre-configured ROS 2 Humble environment optimized for the duckiebot DB21M robotics platform running on the NVIDIA Jetson Nano Developer Kit. It provides a ready-to-use setup that streamlines development, deployment, and experimentation with ROS 2 on embedded systems.
 
 ## SD Card Preparation for Jetson Nano Developer Kit
 
@@ -175,22 +175,22 @@ ls /dev/nv*
 - This confirms the Jetson GPU is visible to Docker containers.
 
 
-## ROS 2 Foxy Base Container on the Jetson
+## ROS 2 Humble Base Container on the Jetson
 To keep your Docker container immutable while preserving your ROS 2 work outside the container, you can use a host-mounted workspace.
 1. Create a workspace on the Jetson host
 ```
-mkdir -p ~/ros_ws
+mkdir -p ~/ros_ws/src
 ```
 This folder will store all your ROS 2 packages, builds, and installations.
-2. Run the ROS 2 Foxy container with the mounted workspace
+2. Run the ROS 2 Humble container with the mounted workspace
 ```
 sudo docker run -it --rm \
   --runtime nvidia \
   --network host \
+  -v ~/ros2_ws:/workspace/ros2_ws \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
-  -v ~/ros_ws:/workspace \
   -e DISPLAY=$DISPLAY \
-  dustynv/ros:foxy-ros-base-l4t-r32.7.1
+  dustynv/ros:humble-ros-base-l4t-r32.7.1
 ```
 3. Work inside the container
 ```
@@ -201,3 +201,19 @@ source install/setup.bash
 - Any changes, packages, or builds inside /workspace persist on the host, even after the container is removed.
 
 - The container remains clean and reusable, while your development work is safely stored outside.
+### Re-accessing the Docker Container on Jetson
+You can easily re-access your Docker container by either rerunning the previous run command or by creating a convenient alias.
+
+Open your Bash configuration
+```
+nano ~/.bashrc
+```
+Scroll to the end of the file and add an alias for your container (for example, `openws`):
+```
+alias openws="sudo docker run -it --rm --runtime nvidia --network host -v ~/ros2_ws:/workspace/ros2_ws -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=$DISPLAY dustynv/ros:humble-ros-base-l4t-r32.7.1"
+```
+Apply the changes
+```
+source ~/.bashrc
+```
+You can now access your container anytime by simply running: `openws`.
