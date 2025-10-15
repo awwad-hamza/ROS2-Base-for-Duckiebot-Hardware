@@ -71,49 +71,79 @@ Once the connection is active, you can SSH into your Jetson from your PC using:
 ssh duckie@10.42.0.2
 ```
 
-### (Optional) Set Up Wi-Fi on the Jetson
-You can either connect your Jetson Nano directly to Wi-Fi or share your PC’s internet connection through an Ethernet bridge.
-In this section, we’ll go through the Wi-Fi setup method, which is often simpler and ensures your Jetson can access the internet for installing packages, pulling Docker images, and running updates.
-> Note: Note: Having an active internet connection on the Jetson is essential for most development tasks.
+### Networking
+Having an active internet connection on the Jetson is essential for most development tasks.
 
+#### Option 1: Wi-Fi
 > Make sure the Wi-Fi dongle is connected to the jetson before this task.
-
 Access your Jetson with a keyboard and monitor, or SSH into it over Ethernet.
->Note: nano is not installed by default on the Jetson, so you’ll need to install it first using: `sudo apt install nano`
 
+Turn on Wi-Fi:
 ```
 nmcli radio wifi on
-sudo nano /etc/NetworkManager/NetworkManager.conf
 ```
-Look for the following section:
+Ensure NetworkManager manages the interfaces:
 ```
-[ifupdown]
-managed=false
+sudo sed -i 's/managed=false/managed=true/' /etc/NetworkManager/NetworkManager.conf
 ```
-If `managed=false` is set, change it to:
-```
-[ifupdown]
-managed=true
-```
-Save and close the file (Ctrl + O, Enter, Ctrl + X), then restart the NetworkManager service:
+Restart NetworkManager:
 ```
 sudo systemctl restart NetworkManager
 ```
 
-### Connect to a Wi-Fi Network
-To view available Wi-Fi networks:
+List available Wi-Fi networks:
 ```
 nmcli device wifi list
 ```
-Then connect to your desired network:
+Connect to your desired network:
 ```
 nmcli device wifi connect "SSID" password "your_password"
 ```
 Replace `SSID` and `your_password` with your actual Wi-Fi network name and password.
 
-> Note: Connecting to a university or public Wi-Fi network (such as `eduroam`), may not be as straightforward as this.
+> Note: Connecting to enterprise or campus networks (e.g., `eduroam`) may require additional configuration files or authentication steps.
+#### Option 2: Ethernet Bridge (via your PC)
+This method shares your computer’s internet connection with the Jetson over Ethernet.
 
+**On your pc**
 
+Enable IPv4 forwarding
+```
+sudo sysctl -w net.ipv4.ip_forward=1
+```
+Make it persistent:
+```
+echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
+```
+Add NAT (masquerade) rules to forward traffic from the Jetson (Ethernet) to your PC’s internet interface (`wlp3s0` = Wi-Fi, `enp2s0` = Ethernet):
+```
+sudo iptables -t nat -A POSTROUTING -o wlp3s0 -j MASQUERADE
+sudo iptables -A FORWARD -i wlp3s0 -o enp2s0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i enp2s0 -o wlp3s0 -j ACCEPT
+```
+Make the rules persistent
+```
+sudo apt install iptables-persistent -y
+sudo netfilter-persistent save
+```
+**On your Jetson**
+Restart the network interface:
+```
+sudo dhclient -r eth0
+sudo dhclient eth0
+```
+Test internet connectivity:
+```
+ping -c 4 8.8.8.8
+```
+You should see replies similar to:
+```
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=112 time=XX ms
+```
+If that works, you’re online, You can then verify DNS resolution:
+```
+ping -c 4 google.com
+```
 ## Docker Installation
 Follow the steps below to install and verify Docker on your Jetson Nano.
 ### Install Docker on the Jetson
