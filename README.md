@@ -4,7 +4,8 @@
 
 ## 🦆 About
 
-ROS2 Base for Duckiebot Hardware is a pre-configured ROS 2 Humble environment optimized for the duckiebot DB21M robotics platform running on the NVIDIA Jetson Nano Developer Kit. It provides a ready-to-use setup that streamlines development, deployment, and experimentation with ROS 2 on embedded systems.
+This repository provides a ROS 2-based software stack for the Duckiebot DB21M platform.
+It repurposes the Duckiebot’s existing hardware with a modern, up-to-date software framework, enabling it to perform more complex and advanced tasks.
 
 ## SD Card Preparation for Jetson Nano Developer Kit
 
