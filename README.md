@@ -71,10 +71,10 @@ Once the connection is active, you can SSH into your Jetson from your PC using:
 ssh duckie@10.42.0.2
 ```
 
-### Networking
+## Networking
 Having an active internet connection on the Jetson is essential for most development tasks.
 
-#### Option 1: Wi-Fi
+### Option 1: Wi-Fi
 > Make sure the Wi-Fi dongle is connected to the jetson before this task.
 Access your Jetson with a keyboard and monitor, or SSH into it over Ethernet.
 
@@ -102,10 +102,10 @@ nmcli device wifi connect "SSID" password "your_password"
 Replace `SSID` and `your_password` with your actual Wi-Fi network name and password.
 
 > Note: Connecting to enterprise or campus networks (e.g., `eduroam`) may require additional configuration files or authentication steps.
-#### Option 2: Ethernet Bridge (via your PC)
+### Option 2: Ethernet Bridge (via your PC)
 This method shares your computer’s internet connection with the Jetson over Ethernet.
 
-**On your pc**
+#### On your pc
 
 Enable IPv4 forwarding
 ```
@@ -126,7 +126,7 @@ Make the rules persistent
 sudo apt install iptables-persistent -y
 sudo netfilter-persistent save
 ```
-**On your Jetson**
+#### On your Jetson
 Restart the network interface:
 ```
 sudo dhclient -r eth0
