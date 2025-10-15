@@ -4,7 +4,7 @@
 
 ## 🦆 About
 
-This repository provides a ROS 2-based software stack for the Duckiebot DB21M platform.
+This repository provides a ROS 2 humble-based software stack for the Duckiebot DB21M platform.
 It repurposes the Duckiebot’s existing hardware with a modern, up-to-date software framework, enabling it to perform more complex and advanced tasks.
 
 ## SD Card Preparation for Jetson Nano Developer Kit
